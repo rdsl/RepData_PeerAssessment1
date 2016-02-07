@@ -11,16 +11,15 @@ Reproducible Research: Peer Assessment 1
 ========================================
 
 
-```{r, echo=FALSE}
-opts_chunk$set(echo=TRUE)
-```
+
 
 
 ## Loading and preprocessing the data
 
 Table is loaded and a new column with the time interval in minutes is created.
 
-```{r}
+
+```r
 data <- read.csv('activity.csv')
 data$date <- as.Date(data$date, format="%F")
 x <- sprintf("%04d", data$interval)
@@ -30,25 +29,31 @@ data$minute <- as.numeric(substr(x, 1, 2)) * 60 + as.numeric(substr(x, 3, 4))
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 daily <- aggregate(steps ~ date, data=data, FUN=sum)
 hist(daily$steps, main='Number of steps per day', xlab='Total daily steps')
 ```
 
-Mean total steps per day: `r mean(daily$steps)`  
-Median total steps per day: `r median(daily$steps)`
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+
+Mean total steps per day: 1.0766189 &times; 10<sup>4</sup>  
+Median total steps per day: 10765
 
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 activity <- aggregate(steps ~ minute, data=data, FUN=mean)
 plot(activity$minute/60, activity$steps, type='l',
      main='Mean number of steps per time interval', xlab='Hour', ylab='Steps')
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
 Hour of maximum number of steps:
-`r activity$minute[which.max(activity$steps)] / 60`
+8.5833333
 
 
 ## Inputing missing values
@@ -57,9 +62,10 @@ Missing values are replaced by the mean number of steps for each time interval.
 The mean and the median daily total number of steps did not change after
 filling in the missing values. 
 
-Total NAs: `r sum(is.na(data$steps))`
+Total NAs: 2304
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+
+```r
 library(plyr)
 
 data2 <- join(data, activity, by='minute')
@@ -73,8 +79,10 @@ hist(daily2$steps, main='Number of steps per day (NAs replaced)',
      xlab='Total daily steps')
 ```
 
-Mean total steps per day: `r mean(daily2$steps)`  
-Median total steps per day: `r median(daily2$steps)`
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
+Mean total steps per day: 1.0766189 &times; 10<sup>4</sup>  
+Median total steps per day: 1.0766189 &times; 10<sup>4</sup>
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -83,7 +91,8 @@ There is a clear peak on the number of steps ~ 08:30 AM on weekdays, probably
 when people are going to work. On weekends, however steps appear to be more
 distributed throughout the day.
 
-```{r}
+
+```r
 library(lattice)
 
 data2$wday <- NA
@@ -99,3 +108,5 @@ activity2 <- aggregate(steps ~ minute + wday, data=data2, FUN=mean)
 xyplot(steps ~ minute / 60 | wday, data=activity2, type='l',
        main='Mean number of steps per time interval', xlab='Hour', ylab='Steps')
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
